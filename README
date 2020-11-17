@@ -1,0 +1,1 @@
+A game for the Arduboy platform written in Rust, using the Rust embedded-hal AVR implementation from github.com/Rahix/avr-hal.  
