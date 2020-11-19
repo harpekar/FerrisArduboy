@@ -5,19 +5,26 @@
 
 extern crate panic_halt;
 
-use arduino_leonardo::prelude::*;
+use arduboy::prelude::*;
 use panic_halt as _;
 
-#[arduino_leonardo::entry]
+#[arduboy::entry]
 fn main() -> ! {
-    let dp = arduino_leonardo::Peripherals::take().unwrap();
+    let dp = arduboy::Peripherals::take().unwrap();
 
-    let mut pins = arduino_leonardo::Pins::new(dp.PORTB, dp.PORTC, dp.PORTD, dp.PORTE, dp.PORTF);
+    let mut pins = arduboy::Pins::new(dp.PORTB, dp.PORTC, dp.PORTD, dp.PORTE, dp.PORTF);
 
-    let mut led0 = pins.led_rx.into_output(&mut pins.ddr);
-    let mut led1 = pins.led_tx.into_output(&mut pins.ddr);
-    let mut led2 = pins.d13.into_output(&mut pins.ddr);
+    let mut led0 = pins.led0.into_output(&mut pins.ddr);
+    let mut led1 = pins.led1.into_output(&mut pins.ddr);
+    let mut led2 = pins.led2.into_output(&mut pins.ddr);
 
+    let mut clk = pins.sck.into_output(&mut pins.ddr);
+    let mut mosi = pins.mosi.into_output(&mut pins.ddr);
+    let mut miso = pins.miso; //Floating input by default
+
+    let mut speaker = pins.speaker1.into_output(&mut pins.ddr);
+
+    speaker.set_high().void_unwrap();
     led0.set_high().void_unwrap();
     led1.set_high().void_unwrap();
     led2.set_high().void_unwrap();
@@ -26,9 +33,12 @@ fn main() -> ! {
 
     loop {
         for i in 0..3 {
+            
+            speaker.toggle().void_unwrap(); 
+            
             leds[i].toggle().void_unwrap();
             leds[(i + 2) % 3].toggle().void_unwrap();
-            arduino_leonardo::delay_ms(200);
+            arduboy::delay_ms(200);
         }
     }
 }
